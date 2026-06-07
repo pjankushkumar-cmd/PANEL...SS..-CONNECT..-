@@ -3,77 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKII AI | LIVE MOD</title>
+    <title>HACKII AI | ULTRA FAST</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@700&display=swap');
         body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
         
-        .card { 
-            width: 340px; background: linear-gradient(145deg, #101010, #1a1a1a); 
-            border: 3px solid #00ffcc; border-radius: 30px; padding: 25px; 
-            text-align: center; box-shadow: 0 0 60px rgba(0, 255, 204, 0.4);
-            position: relative;
+        .main-container { 
+            width: 350px; background: #0a0a0a; border: 3px solid #00ffcc; border-radius: 35px; 
+            padding: 30px; text-align: center; box-shadow: 0 0 50px #00ffcc;
         }
 
-        .brand { font-size: 30px; font-weight: 900; color: #00ffcc; text-transform: uppercase; text-shadow: 0 0 20px #00ffcc; }
-        .issue-text { font-size: 15px; color: #ff00ff; margin-top: 10px; font-weight: bold; }
-        .result-val { font-size: 110px; font-weight: 900; margin: 20px 0; color: #fff; text-shadow: 0 0 30px #ff00ff; animation: scale 1s infinite alternate; }
+        .header { font-size: 28px; font-weight: 900; color: #00ffcc; letter-spacing: 4px; }
+        .period { font-size: 16px; color: #ffcc00; margin: 15px 0; font-family: 'Rajdhani', sans-serif; }
+        .result { 
+            font-size: 120px; font-weight: 900; color: #fff; text-shadow: 0 0 40px #ff00ff; 
+            margin: 20px 0; transition: all 0.1s ease;
+        }
         
-        @keyframes scale { from { transform: scale(1); } to { transform: scale(1.05); } }
-
-        .footer-stats { display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
-        .stat-box { font-size: 12px; color: #888; }
-        .stat-val { font-size: 16px; color: #00ffcc; }
+        .status-badge { 
+            display: inline-block; padding: 5px 15px; border-radius: 20px; 
+            background: #ff0055; font-size: 10px; margin-bottom: 15px; 
+            animation: blink 0.5s infinite;
+        }
+        @keyframes blink { 50% { opacity: 0; } }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="brand">HACKII AI</div>
-    <div id="issue" class="issue-text">PERIOD: LOADING...</div>
-    <div id="result" class="result-val">0</div>
-    
-    <div class="footer-stats">
-        <div class="stat-box">SERVER<br><span class="stat-val">LIVE</span></div>
-        <div class="stat-box">LATENCY<br><span class="stat-val">0.01ms</span></div>
-    </div>
+<div class="main-container">
+    <div class="status-badge" id="mode">SYSTEM: STABLE</div>
+    <div class="header">HACKII AI</div>
+    <div class="period" id="issue">FETCHING PERIOD...</div>
+    <div class="result" id="result">0</div>
 </div>
 
 <script>
     let lastIssue = "";
 
-    async function fetchUpdate() {
+    async function updateData() {
         try {
-            // API call
-            const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json');
+            // cache: 'no-store' is mandatory for instant data
+            const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json', { cache: 'no-store' });
             const json = await res.json();
-            
-            // Data path correction: list[0] ke andar 'issue' aur 'number' dono hote hain
             const data = json.data.list[0];
-            const issueNumber = data.issue;
-            const resultNumber = data.number;
 
-            if (issueNumber !== lastIssue) {
-                document.getElementById('issue').innerText = "PERIOD: " + issueNumber;
-                document.getElementById('result').innerText = resultNumber;
-                lastIssue = issueNumber;
+            if (data.issue !== lastIssue) {
+                document.getElementById('issue').innerText = "PERIOD: " + data.issue;
+                document.getElementById('result').innerText = data.number;
+                lastIssue = data.issue;
+                // Pop animation
+                document.getElementById('result').style.transform = "scale(1.2)";
+                setTimeout(() => { document.getElementById('result').style.transform = "scale(1)"; }, 100);
             }
-        } catch(e) { console.log("System Syncing..."); }
+        } catch(e) { console.error("Refreshing..."); }
     }
 
-    // High Speed Engine
-    function loop() {
+    // Engine loop for max speed
+    function engine() {
         let sec = new Date().getSeconds();
-        // Fast polling 54s to 02s
+        // High intensity check between 54s to 02s
         if (sec >= 54 || sec <= 2) {
-            fetchUpdate();
-            setTimeout(loop, 200); 
+            document.getElementById('mode').innerText = "TURBO MODE: ACTIVE";
+            document.getElementById('mode').style.background = "#00ffcc";
+            document.getElementById('mode').style.color = "#000";
+            updateData();
+            setTimeout(engine, 50); // 50ms interval = Instant Refresh
         } else {
-            fetchUpdate();
-            setTimeout(loop, 2000);
+            document.getElementById('mode').innerText = "SYSTEM: STABLE";
+            document.getElementById('mode').style.background = "#ff0055";
+            document.getElementById('mode').style.color = "#fff";
+            updateData();
+            setTimeout(engine, 2000); // Normal check
         }
     }
-    loop();
+    
+    engine();
 </script>
 </body>
 </html>
