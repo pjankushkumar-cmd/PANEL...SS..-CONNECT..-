@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ULTRA PRO LIVE DASHBOARD</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;900&display=swap');
+        
+        body { background: #0a0a0a; color: #fff; font-family: 'Orbitron', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
+        
+        /* Animation: Glowing Border */
+        .dashboard { 
+            background: #121212; padding: 30px; border-radius: 25px; 
+            border: 2px solid #00ff88; box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+            width: 90%; max-width: 400px; text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse { 0% { box-shadow: 0 0 10px #00ff88; } 50% { box-shadow: 0 0 30px #00ff88; } 100% { box-shadow: 0 0 10px #00ff88; } }
+
+        .header { font-size: 22px; color: #00ff88; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
+        .name-tag { color: #fff; font-size: 14px; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        
+        .result-box { font-size: 90px; font-weight: 900; color: #00ff88; margin: 10px 0; animation: blink 1s infinite; }
+        @keyframes blink { 50% { opacity: 0.8; } }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-item { background: #1a1a1a; padding: 15px; border-radius: 12px; }
+        .label { font-size: 10px; color: #888; text-transform: uppercase; }
+        .value { font-size: 18px; color: #00ff88; margin-top: 5px; }
+
+        .turbo-badge { background: #ff0044; padding: 5px 15px; border-radius: 50px; font-size: 12px; margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <div class="header">ULTRA FAST LIVE</div>
+    <div class="name-tag">Welcome, <b>VIP TRADER</b></div>
+    
+    <div id="issue" style="color: #666; font-size: 12px;">Detecting Issue...</div>
+    <div id="result" class="result-box">--</div>
+    
+    <div class="stats-grid">
+        <div class="stat-item">
+            <div class="label">Winning Amt</div>
+            <div id="win-amt" class="value">₹0.00</div>
+        </div>
+        <div class="stat-item">
+            <div class="label">Live Users</div>
+            <div class="value">1,248</div>
+        </div>
+    </div>
+    
+    <div id="turbo" class="turbo-badge">TURBO MODE ACTIVE</div>
+</div>
+
+<script>
+    let lastIssue = "";
+
+    async function updateDashboard() {
+        try {
+            const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json');
+            const data = await res.json();
+            const item = data.data.list[0];
+
+            if(item.issue !== lastIssue) {
+                document.getElementById('issue').innerText = "Issue: " + item.issue;
+                document.getElementById('result').innerText = item.number;
+                // Random winning calculation animation
+                document.getElementById('win-amt').innerText = "₹" + (Math.random() * 5000).toFixed(2);
+                lastIssue = item.issue;
+            }
+        } catch (err) { console.log("Fetching..."); }
+    }
+
+    // Adaptive Loop
+    function checkMode() {
+        let sec = new Date().getSeconds();
+        // Agar seconds 54 se 59 ke beech hain (last 6 seconds)
+        if (sec >= 54 || sec <= 2) {
+            document.getElementById('turbo').style.display = "inline-block";
+            updateDashboard();
+            setTimeout(checkMode, 200); // 200ms speed
+        } else {
+            document.getElementById('turbo').style.display = "none";
+            updateDashboard();
+            setTimeout(checkMode, 2000); // 2 seconds speed
+        }
+    }
+
+    checkMode();
+</script>
+</body>
+</html>
