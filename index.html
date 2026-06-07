@@ -3,86 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKII AI PRO</title>
+    <title>HACKII AI | LIVE MOD</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@700&display=swap');
-
-        body { 
-            background: radial-gradient(circle, #1a1a2e, #0f0f1a); 
-            color: #fff; font-family: 'Orbitron', sans-serif; 
-            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; 
-        }
-
-        .main-card {
-            width: 350px; background: rgba(20, 20, 30, 0.8);
-            border: 2px solid transparent; border-radius: 30px; padding: 25px;
-            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
-            text-align: center; backdrop-filter: blur(10px);
-            background-clip: padding-box; border-image: linear-gradient(45deg, #00ffcc, #ff00ff) 1;
-        }
-
-        .brand { font-size: 28px; font-weight: 900; background: linear-gradient(to right, #00ffcc, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .period-text { font-size: 14px; color: #ffcc00; margin: 10px 0; letter-spacing: 2px; }
+        body { background: #000; color: #fff; font-family: 'Orbitron', sans-serif; margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow: hidden; }
         
-        .result-box { 
-            font-size: 110px; font-weight: 900; color: #fff;
-            text-shadow: 0 0 20px #00ffcc, 0 0 40px #ff00ff;
-            margin: 15px 0; animation: bounce 1s infinite alternate;
+        .card { 
+            width: 340px; background: linear-gradient(145deg, #101010, #1a1a1a); 
+            border: 3px solid #00ffcc; border-radius: 30px; padding: 25px; 
+            text-align: center; box-shadow: 0 0 60px rgba(0, 255, 204, 0.4);
+            position: relative;
         }
-        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
 
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
-        .stat-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(0,255,255,0.2); }
-        .val { font-size: 18px; color: #00ffcc; margin-top: 5px; text-shadow: 0 0 5px #00ffcc; }
+        .brand { font-size: 30px; font-weight: 900; color: #00ffcc; text-transform: uppercase; text-shadow: 0 0 20px #00ffcc; }
+        .issue-text { font-size: 15px; color: #ff00ff; margin-top: 10px; font-weight: bold; }
+        .result-val { font-size: 110px; font-weight: 900; margin: 20px 0; color: #fff; text-shadow: 0 0 30px #ff00ff; animation: scale 1s infinite alternate; }
+        
+        @keyframes scale { from { transform: scale(1); } to { transform: scale(1.05); } }
+
+        .footer-stats { display: flex; justify-content: space-between; border-top: 1px solid #333; padding-top: 15px; margin-top: 10px; }
+        .stat-box { font-size: 12px; color: #888; }
+        .stat-val { font-size: 16px; color: #00ffcc; }
     </style>
 </head>
 <body>
 
-<div class="main-card">
+<div class="card">
     <div class="brand">HACKII AI</div>
-    <div id="period" class="period-text">PERIOD: FETCHING...</div>
-    <div id="result" class="result-box">0</div>
+    <div id="issue" class="issue-text">PERIOD: LOADING...</div>
+    <div id="result" class="result-val">0</div>
     
-    <div class="stats-grid">
-        <div class="stat-card">
-            <div style="font-size: 10px;">USERS</div>
-            <div class="val">12.4K</div>
-        </div>
-        <div class="stat-card">
-            <div style="font-size: 10px;">STATUS</div>
-            <div class="val" style="color: #ff00ff;">ONLINE</div>
-        </div>
+    <div class="footer-stats">
+        <div class="stat-box">SERVER<br><span class="stat-val">LIVE</span></div>
+        <div class="stat-box">LATENCY<br><span class="stat-val">0.01ms</span></div>
     </div>
 </div>
 
 <script>
     let lastIssue = "";
 
-    async function updateData() {
+    async function fetchUpdate() {
         try {
+            // API call
             const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json');
-            const data = await res.json();
-            const latest = data.data.list[0];
+            const json = await res.json();
+            
+            // Data path correction: list[0] ke andar 'issue' aur 'number' dono hote hain
+            const data = json.data.list[0];
+            const issueNumber = data.issue;
+            const resultNumber = data.number;
 
-            if (latest.issue !== lastIssue) {
-                document.getElementById('period').innerText = "PERIOD: " + latest.issue;
-                document.getElementById('result').innerText = latest.number;
-                lastIssue = latest.issue;
-                // Add flash effect on change
-                document.getElementById('result').style.textShadow = "0 0 50px #fff";
-                setTimeout(() => { document.getElementById('result').style.textShadow = "0 0 20px #00ffcc, 0 0 40px #ff00ff"; }, 500);
+            if (issueNumber !== lastIssue) {
+                document.getElementById('issue').innerText = "PERIOD: " + issueNumber;
+                document.getElementById('result').innerText = resultNumber;
+                lastIssue = issueNumber;
             }
-        } catch(e) { console.log("Retrying..."); }
+        } catch(e) { console.log("System Syncing..."); }
     }
 
+    // High Speed Engine
     function loop() {
         let sec = new Date().getSeconds();
-        // Turbo mode from 54s to 02s
+        // Fast polling 54s to 02s
         if (sec >= 54 || sec <= 2) {
-            updateData();
+            fetchUpdate();
             setTimeout(loop, 200); 
         } else {
-            updateData();
+            fetchUpdate();
             setTimeout(loop, 2000);
         }
     }
