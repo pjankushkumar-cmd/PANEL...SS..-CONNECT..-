@@ -3,83 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKII AI - PRO MOD</title>
+    <title>HACKII AI PRO</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Rajdhani:wght@600&display=swap');
-        
-        body { background: #000; color: #00ffcc; font-family: 'Rajdhani', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
-        
-        .panel { 
-            width: 350px; background: linear-gradient(145deg, #0a0a0a, #1a1a1a); 
-            border: 1px solid #00ffcc; border-radius: 25px; padding: 25px; 
-            box-shadow: 0 0 50px rgba(0, 255, 204, 0.2); text-align: center;
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@700&display=swap');
+
+        body { 
+            background: radial-gradient(circle, #1a1a2e, #0f0f1a); 
+            color: #fff; font-family: 'Orbitron', sans-serif; 
+            margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; 
         }
 
-        .brand { font-family: 'Audiowide', cursive; font-size: 24px; color: #fff; text-shadow: 0 0 15px #00ffcc; margin-bottom: 20px; }
-        
-        .live-indicator { font-size: 12px; background: #222; padding: 5px 10px; border-radius: 20px; color: #ff0055; border: 1px solid #ff0055; display: inline-block; animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
+        .main-card {
+            width: 350px; background: rgba(20, 20, 30, 0.8);
+            border: 2px solid transparent; border-radius: 30px; padding: 25px;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.3);
+            text-align: center; backdrop-filter: blur(10px);
+            background-clip: padding-box; border-image: linear-gradient(45deg, #00ffcc, #ff00ff) 1;
+        }
 
-        .result-val { font-size: 120px; font-weight: 900; color: #fff; margin: 10px 0; }
+        .brand { font-size: 28px; font-weight: 900; background: linear-gradient(to right, #00ffcc, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .period-text { font-size: 14px; color: #ffcc00; margin: 10px 0; letter-spacing: 2px; }
         
-        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
-        .box { background: #111; padding: 10px; border-radius: 10px; border: 1px solid #333; }
-        .val { font-size: 18px; color: #00ffcc; font-weight: bold; }
+        .result-box { 
+            font-size: 110px; font-weight: 900; color: #fff;
+            text-shadow: 0 0 20px #00ffcc, 0 0 40px #ff00ff;
+            margin: 15px 0; animation: bounce 1s infinite alternate;
+        }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-10px); } }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .stat-card { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(0,255,255,0.2); }
+        .val { font-size: 18px; color: #00ffcc; margin-top: 5px; text-shadow: 0 0 5px #00ffcc; }
     </style>
 </head>
 <body>
 
-<div class="panel">
+<div class="main-card">
     <div class="brand">HACKII AI</div>
-    <div class="live-indicator">● SYSTEM LIVE</div>
+    <div id="period" class="period-text">PERIOD: FETCHING...</div>
+    <div id="result" class="result-box">0</div>
     
-    <div id="result" class="result-val">--</div>
-    
-    <div class="info-grid">
-        <div class="box">
-            <div style="font-size: 10px;">ACTIVE USERS</div>
-            <div id="users" class="val">8,492</div>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div style="font-size: 10px;">USERS</div>
+            <div class="val">12.4K</div>
         </div>
-        <div class="box">
-            <div style="font-size: 10px;">SERVER LATENCY</div>
-            <div class="val">0.02ms</div>
+        <div class="stat-card">
+            <div style="font-size: 10px;">STATUS</div>
+            <div class="val" style="color: #ff00ff;">ONLINE</div>
         </div>
     </div>
 </div>
 
 <script>
-    let lastNumber = null;
+    let lastIssue = "";
 
-    async function getFastResult() {
+    async function updateData() {
         try {
-            const response = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json', { cache: "no-store" });
-            const data = await response.json();
-            const latest = data.data.list[0].number;
+            const res = await fetch('https://draw.ar-lottery01.com/WinGo/WinGo_1M/GetHistoryIssuePage.json');
+            const data = await res.json();
+            const latest = data.data.list[0];
 
-            if (latest !== lastNumber) {
-                document.getElementById('result').innerText = latest;
-                lastNumber = latest;
-                // Animation effect on change
-                document.getElementById('result').style.transform = "scale(1.1)";
-                setTimeout(() => { document.getElementById('result').style.transform = "scale(1)"; }, 200);
+            if (latest.issue !== lastIssue) {
+                document.getElementById('period').innerText = "PERIOD: " + latest.issue;
+                document.getElementById('result').innerText = latest.number;
+                lastIssue = latest.issue;
+                // Add flash effect on change
+                document.getElementById('result').style.textShadow = "0 0 50px #fff";
+                setTimeout(() => { document.getElementById('result').style.textShadow = "0 0 20px #00ffcc, 0 0 40px #ff00ff"; }, 500);
             }
-        } catch (e) { console.error("API Fetching..."); }
+        } catch(e) { console.log("Retrying..."); }
     }
 
-    // High Performance Loop
-    function startEngine() {
+    function loop() {
         let sec = new Date().getSeconds();
-        // 54 se 59 aur start ke 2 seconds mein Full Turbo
+        // Turbo mode from 54s to 02s
         if (sec >= 54 || sec <= 2) {
-            getFastResult();
-            setTimeout(startEngine, 100); // 100ms extremely fast speed
+            updateData();
+            setTimeout(loop, 200); 
         } else {
-            getFastResult();
-            setTimeout(startEngine, 2000); // Normal background refresh
+            updateData();
+            setTimeout(loop, 2000);
         }
     }
-
-    startEngine();
+    loop();
 </script>
 </body>
 </html>
